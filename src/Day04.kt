@@ -18,8 +18,6 @@ fun main() {
             var parts = i.split(",", "-").map{it.toInt()}.toTypedArray()
             if ((parts[0] <= parts[3]) && (parts[1] >= parts[2])) {
                 num++
-            } else if ((parts[2] <= parts[1]) && (parts[3] >= parts[0])) {
-                num++
             }
         }
         return num
