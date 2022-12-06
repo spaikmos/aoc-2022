@@ -104,8 +104,8 @@ fun main() {
             score += table[idx1][idx2]
         }
         return score
-
     }
+
     val input = readInput("../input/Day02")
     println(part1(input))
     println(part2(input))
