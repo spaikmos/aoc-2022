@@ -1,6 +1,5 @@
 import java.util.LinkedList
 
-
 fun main() {
     // Ingest the list of input commands to generate file structure tree
     fun buildTree(input: List<String>): TreeNode {
