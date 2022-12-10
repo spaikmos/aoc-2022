@@ -1,12 +1,11 @@
 fun main() {
+    val DIM = 1000
+    val START = DIM/2
+
     fun part1(input: List<String>): Int {
-        val DIM = 1000
-        val START = DIM/2
-        var headX = START
-        var headY = START
-        var tailX = START
-        var tailY = START
-        var seen = Array(DIM) {Array(DIM) {0} }
+        val head = intArrayOf(START, START)
+        var tail = intArrayOf(START, START)
+        val seen = mutableSetOf(Pair(START, START))
 
         for (i in input) {
             val parts = i.split(" ")
@@ -14,48 +13,31 @@ fun main() {
             val dist = parts[1].toInt()
 
             for (j in 1..dist) {
+                val prev = head.clone()
                 // Move the head
-                if (dir == 'U') {
-                    headY++
-                } else if (dir == 'D') {
-                    headY--
-                } else if (dir == 'L') {
-                    headX--
-                } else if (dir == 'R') {
-                    headX++
+                when (dir) {
+                    'U' -> head[1]++
+                    'D' -> head[1]--
+                    'L' -> head[0]--
+                    'R' -> head[0]++
                 }
 
-                // Move the tail (if needed)
-                if ((headX == tailX) && kotlin.math.abs(headY - tailY) > 1) {
-                    tailY = (headY + tailY) / 2
-                } else if ((headY == tailY) && kotlin.math.abs(headX - tailX) > 1) {
-                    tailX = (headX + tailX) / 2
-                } else if (kotlin.math.abs(headX - tailX) > 1) {
-                    tailX = (headX + tailX) / 2
-                    tailY = headY
-                } else if (kotlin.math.abs(headY - tailY) > 1) {
-                    tailY = (headY + tailY) / 2
-                    tailX = headX
+                // Tail only moves if head is more than 2 spaces away in any direction
+                if ((kotlin.math.abs(head[0] - tail[0]) > 1) ||
+                    (kotlin.math.abs(head[1] - tail[1]) > 1)) {
+                    // If the tail moves, it occupies the previous space that head was at
+                    tail = prev
+                    // Add the position to the set of visited positions
+                    seen.add(Pair(tail[0], tail[1]))
                 }
-                // Mark the position on the map
-                seen[tailX][tailY] = 1
             }
         }
-
-        // Count the total number of trees
-        var total = 0
-        for (i in seen) {
-            total += i.sum()
-        }
-        return total
+        return seen.size
     }
 
     fun part2(input: List<String>): Int {
-        val DIM = 1000
-        val START = DIM/2
-        var headX = IntArray(10){START}
-        var headY = IntArray(10){START}
-        var seen = Array(DIM) {Array(DIM) {0} }
+        val knot = Array(10){Array(2){START}}
+        val seen = mutableSetOf(Pair(START, START))
 
         for (i in input) {
             val parts = i.split(" ")
@@ -64,46 +46,35 @@ fun main() {
 
             for (j in 1..dist) {
                 // Move the head
-                if (dir == 'U') {
-                    headY[0]++
-                } else if (dir == 'D') {
-                    headY[0]--
-                } else if (dir == 'L') {
-                    headX[0]--
-                } else if (dir == 'R') {
-                    headX[0]++
+                when (dir) {
+                    'U' -> knot[0][1]++
+                    'D' -> knot[0][1]--
+                    'L' -> knot[0][0]--
+                    'R' -> knot[0][0]++
                 }
 
                 for (k in 1..9) {
-                    // Move the tail (if needed)
-                    if ((headX[k-1] == headX[k]) && kotlin.math.abs(headY[k-1] - headY[k]) > 1){
-                        headY[k] = (headY[k-1] + headY[k]) / 2
-                    } else if ((headY[k-1] == headY[k]) && kotlin.math.abs(headX[k-1] - headX[k]) > 1){
-                        headX[k] = (headX[k-1] + headX[k]) / 2
-                    } else if ((kotlin.math.abs(headX[k-1] - headX[k]) > 1) &&
-                        (kotlin.math.abs(headY[k-1] - headY[k]) > 1)) {
+                    if ((kotlin.math.abs(knot[k-1][0] - knot[k][0]) > 1) &&
+                        (kotlin.math.abs(knot[k-1][1] - knot[k][1]) > 1)) {
                         // Previous knot moved diagonally.  This needs to move in same direction
-                        headX[k] = (headX[k-1] + headX[k]) / 2
-                        headY[k] = (headY[k-1] + headY[k]) / 2
-                    } else if (kotlin.math.abs(headX[k-1] - headX[k]) > 1) {
-                        headX[k] = (headX[k-1] + headX[k]) / 2
-                        headY[k] = headY[k-1]
-                    } else if (kotlin.math.abs(headY[k-1] - headY[k]) > 1) {
-                        headY[k] = (headY[k-1] + headY[k]) / 2
-                        headX[k] = headX[k-1]
+                        knot[k][0] = (knot[k-1][0] + knot[k][0]) / 2
+                        knot[k][1] = (knot[k-1][1] + knot[k][1]) / 2
+                    } else if (kotlin.math.abs(knot[k-1][0] - knot[k][0]) > 1) {
+                        knot[k][0] = (knot[k-1][0] + knot[k][0]) / 2
+                        knot[k][1] = knot[k-1][1]
+                    } else if (kotlin.math.abs(knot[k-1][1] - knot[k][1]) > 1) {
+                        knot[k][1] = (knot[k-1][1] + knot[k][1]) / 2
+                        knot[k][0] = knot[k-1][0]
+                    } else {
+                        // Chain has stopped moving, no need to process the rest of the knots
+                        break
                     }
                 }
-                // Mark the position on the map
-                seen[headX[9]][headY[9]] = 1
+                // Add the position to the set of visited positions
+                seen.add(Pair(knot[9][0], knot[9][1]))
             }
         }
-
-        // Count the total number of trees
-        var total = 0
-        for (i in seen) {
-            total += i.sum()
-        }
-        return total
+        return seen.size
     }
 
     val input = readInput("../input/Day09")

@@ -3,6 +3,7 @@ fun main() {
     val DIM = 99
     fun part1(input: List<String>): Int {
         // Create a 2D array of the same size as the input
+        //var seenTrees = mutableSetOf(Pair(0, 0))
         var seenTrees = Array(DIM) {Array(DIM) {0} }
 
         for (i in 0..(DIM-1)) {
