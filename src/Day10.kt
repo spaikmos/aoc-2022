@@ -41,8 +41,8 @@ fun main() {
                 tick++
             }
         }
-        for (i in 0..5) {
-            println(String(crt[i]))
+        for (i in crt) {
+            println(String(i))
         }
         return 0
     }
