@@ -16,8 +16,7 @@ fun main() {
         val noBeacon = mutableSetOf<Int>()
 
         for (i in sb) {
-            val sensor = i.first
-            val beacon = i.second
+            val (sensor, beacon) = i
             // Calculate manhattan distance
             val sensorRange = Math.abs(sensor.first - beacon.first) + Math.abs(sensor.second - beacon.second)
             // Find distance to the yRow of interest
@@ -42,8 +41,7 @@ fun main() {
 
         // Pre-calculate all the sensor ranges first
         for (i in sb) {
-            val sensor = i.first
-            val beacon = i.second
+            val (sensor, beacon) = i
             val sensorRange = Math.abs(sensor.first - beacon.first) + Math.abs(sensor.second - beacon.second)
             sensors.add(Pair(sensor, sensorRange))
         }
@@ -58,14 +56,17 @@ fun main() {
                     val sensor = i.first
                     val range = i.second
                     val dist = Math.abs(x - sensor.first) + Math.abs(y - sensor.second)
-                    if (dist < range) {
+                    if (dist <= range) {
                         // Sensor can see the beacon.  Skip the range that the sensor can see the
                         //  beacon by re-purposing the algorithm from part 1
                         val xDist = Math.abs(x - sensor.first)
                         val yDist = range - xDist
-                        y = sensor.second + yDist
                         seen = true
-                        break
+
+                        if (dist < range) {
+                            y = sensor.second + yDist
+                            break
+                        }
                     }
                 }
                 if (seen == false) {
